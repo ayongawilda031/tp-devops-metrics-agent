@@ -1,0 +1,33 @@
+# Dockerfile.dev — environnement de développement
+# Objectif : confort de dev (hot-reload) + tests, pas l'optimisation de taille.
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+# procps fournit la commande `uptime` utilisée par app/collector.py (subprocess)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Dépendances (y compris pytest, nécessaire pour les tests en dev)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Utilisateur non-root
+RUN useradd -m -u 1000 appuser \
+    && chown -R appuser:appuser /app
+USER appuser
+
+# Le code réel est monté en volume par docker-compose (voir docker-compose.override.yml) ;
+# cette copie permet aussi de lancer l'image seule, sans compose, pour un test rapide.
+COPY --chown=appuser:appuser . .
+
+EXPOSE 8000
+
+# --reload : rechargement à chaud du service API dès qu'un fichier .py change
+CMD ["uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
