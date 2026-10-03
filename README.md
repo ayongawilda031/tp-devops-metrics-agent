@@ -1,4 +1,11 @@
-# System Metrics Agent — Conteneurisation, Orchestration & CI/CD
+## Groupe 5 — Master 1 S7
+
+- **HOMDOUM Janvier Boreil**
+- **MALEMBA Esther Lydie**
+- **AYONGA TOUGANDE Noellie-Wilda**
+
+---
+# Travail Pratique Conteneurisation, Orchestration & CI/CD
 
 ## 1. Présentation du projet et architecture
 
